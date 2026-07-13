@@ -62,3 +62,4 @@
 - 组件开发必须遵循 vercel-labs/agent-skills 的规范，包括组件组合（composition）模式和官方推荐写法。
 - 优先使用组件组合而非 props 透传或过度抽象。
 - Server Component / Client Component 的划分遵循 Next.js 官方推荐：默认 Server Component，仅在需要交互 / 状态 / 浏览器 API 时使用 `"use client"`。
+- 使用 SVG 时始终通过 `@svgr/webpack` 将其转换为 React 组件后直接引入使用，禁止通过 `<img>` / `next/image` 引用 SVG 文件；若项目未安装 `@svgr/webpack`，自动安装并完成 turbopack / Next.js 配置后再使用。
