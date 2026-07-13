@@ -46,7 +46,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 写完代码后的验证
 - 写完代码后必须用 Playwright 跑一次验证，确认功能实际可用，而不是只看代码正确。
-- 做 UI 还原时，完成后必须调用 figma-overlay-check 技能做叠图比对验证还原度，达标（mismatch < 2% 且无成片差异色块）才算完成。
+- 做 UI 还原时，完成后必须调用 figma-overlay-check 技能做叠图比对验证还原度，达标（mismatch = 0% 且无成片差异色块）才算完成。
 
 ## 报错 / 崩溃 / 异常行为排查
 涉及报错、崩溃、异常行为的排查任务时，必须先触发 systematic-debugging 技能，按以下顺序执行：
