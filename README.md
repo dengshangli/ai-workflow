@@ -32,7 +32,8 @@ bash /path/to/ai-workflow/install.sh
 
 - 目标文件不存在 → 直接复制；
 - 目标文件已存在且内容相同 → 跳过；
-- 目标文件已存在且内容不同 → 原文件保持不动，新内容写入副本，如 `AGENTS.copy.md`（副本也冲突时递增为 `AGENTS.copy1.md`、`AGENTS.copy2.md`…）。
+- `AGENTS.md` 已存在 → 模板内容**追加**到你项目的 `AGENTS.md` 末尾（如已包含相同内容则跳过，可重复执行）；
+- 其他目标文件已存在且内容不同 → 原文件保持不动，新内容写入副本，如 `CLAUDE.copy.md`（副本也冲突时递增为 `CLAUDE.copy1.md`、`CLAUDE.copy2.md`…）。
 
 `.cursor` 目录不会整体生成副本，而是**逐个文件**合并进你项目的 `.cursor/rules/`、`.cursor/skills/` 等目录，只有单个文件冲突时才为该文件生成副本。
 
