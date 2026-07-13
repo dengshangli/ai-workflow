@@ -18,7 +18,9 @@ DEST="$(pwd)"
 # 定位模板目录：本地仓库内直接用 templates/，否则从 GitHub 下载
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 TMP_DIR=""
-if [ -n "$SCRIPT_DIR" ] && [ -d "$SCRIPT_DIR/templates" ]; then
+# 仅当脚本确实位于本仓库内（install.sh 与 templates/ 并存）才用本地模板，
+# 避免 curl | bash 时误把用户项目里的 templates/ 当作模板源
+if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/install.sh" ] && [ -f "$SCRIPT_DIR/templates/AGENTS.md" ]; then
   TEMPLATES="$SCRIPT_DIR/templates"
 else
   TMP_DIR="$(mktemp -d)"
