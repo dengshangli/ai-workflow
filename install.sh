@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# ai-workflow 安装脚本
+# 用法（在你的项目根目录执行）：
+#   curl -fsSL https://raw.githubusercontent.com/dengshangli/ai-workflow/main/install.sh | bash
+#
+# 行为说明：
+# - AGENTS.md / CLAUDE.md 复制到项目根目录
+# - .cursor/ 下的文件逐个合并进项目的 .cursor/rules、.cursor/skills 等目录
+# - 目标文件已存在且内容不同时，不覆盖，写入 xxx.copy.ext 副本
+# - 目标文件已存在且内容相同时，跳过
+
+set -euo pipefail
+
+REPO="dengshangli/ai-workflow"
+BRANCH="main"
+DEST="$(pwd)"
+
+# 定位模板目录：本地仓库内直接用 templates/，否则从 GitHub 下载
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
+TMP_DIR=""
+if [ -n "$SCRIPT_DIR" ] && [ -d "$SCRIPT_DIR/templates" ]; then
+  TEMPLATES="$SCRIPT_DIR/templates"
+else
+  TMP_DIR="$(mktemp -d)"
+  trap 'rm -rf "$TMP_DIR"' EXIT
+  echo "正在从 GitHub 下载模板..."
+  curl -fsSL "https://github.com/$REPO/archive/refs/heads/$BRANCH.tar.gz" | tar -xz -C "$TMP_DIR"
+  TEMPLATES="$TMP_DIR/$(basename "$REPO")-$BRANCH/templates"
+fi
+
+if [ ! -d "$TEMPLATES" ]; then
+  echo "错误：找不到模板目录 $TEMPLATES" >&2
+  exit 1
+fi
+
+# 生成不冲突的副本文件名：AGENTS.md -> AGENTS.copy.md -> AGENTS.copy1.md ...
+copy_name() {
+  local dir="$1" base="$2" n="$3" suffix
+  [ "$n" -eq 0 ] && suffix="copy" || suffix="copy$n"
+  if [[ "$base" == *.* ]]; then
+    echo "$dir/${base%.*}.$suffix.${base##*.}"
+  else
+    echo "$dir/$base.$suffix"
+  fi
+}
+
+install_file() {
+  local src="$1" dst="$2"
+  local dir base target n
+  dir="$(dirname "$dst")"
+  base="$(basename "$dst")"
+  mkdir -p "$dir"
+
+  if [ ! -e "$dst" ]; then
+    cp "$src" "$dst"
+    echo "  新增        $dst"
+    return
+  fi
+  if cmp -s "$src" "$dst"; then
+    echo "  跳过(相同)  $dst"
+    return
+  fi
+  n=0
+  target="$(copy_name "$dir" "$base" "$n")"
+  while [ -e "$target" ]; do
+    if cmp -s "$src" "$target"; then
+      echo "  跳过(副本已存在) $target"
+      return
+    fi
+    n=$((n + 1))
+    target="$(copy_name "$dir" "$base" "$n")"
+  done
+  cp "$src" "$target"
+  echo "  冲突→副本   $target  (原文件 $base 未改动)"
+}
+
+echo "安装 AI 工作流文件到：$DEST"
+echo
+
+while IFS= read -r src; do
+  rel="${src#"$TEMPLATES"/}"
+  install_file "$src" "$DEST/$rel"
+done < <(find "$TEMPLATES" -type f | sort)
+
+echo
+echo "完成。如生成了 *.copy.* 副本，请手动对比合并后删除副本。"

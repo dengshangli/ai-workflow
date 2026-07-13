@@ -1,0 +1,10 @@
+---
+description: 项目规则统一入口，所有规则以 wukong-about/AGENTS.md 为唯一来源
+alwaysApply: true
+---
+
+# 项目规则
+
+所有项目规则统一维护在 `wukong-about/AGENTS.md`，请阅读并严格遵循该文件，不要在本目录重复维护规则内容。
+
+@wukong-about/AGENTS.md
