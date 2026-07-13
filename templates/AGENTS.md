@@ -42,6 +42,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## 框架 / 库 API 用法
 - 涉及框架 / 库 API 用法时，必须先用 context7 查询当前版本的官方文档，确认 API 签名和推荐用法后再编码，避免使用过时或臆造的 API。
 
+## Codegraph 代码图谱
+- 开始任务前检查项目是否已使用 codegraph；如果没有（例如不存在 codegraph 索引 / 配置），先执行 `codegraph init` 完成初始化，再继续后续工作。
+- 每次阅读 / 检索项目代码时，优先通过 codegraph 查询代码结构和调用关系，再按需读取具体文件，避免直接全局搜索或逐文件翻找。
+
 # 验证与排错规范
 
 ## 写完代码后的验证
