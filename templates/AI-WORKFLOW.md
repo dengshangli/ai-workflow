@@ -1,8 +1,8 @@
-<!-- 以下为项目规则的唯一来源（single source of truth）。.cursor/rules 与 CLAUDE.md 均引用本文件，请勿在别处重复维护。 -->
+<!-- 以下为 AI 工作流规则的唯一来源（single source of truth）。AGENTS.md、CLAUDE.md 与 .cursor/rules 均引用本文件，请勿在别处重复维护。 -->
 # 技能库、代码审查与语言规范
 
 ## 技能库使用
-- 本文件（AGENTS.md）中提及的技能、MCP 服务或其他工具，如果发现当前环境缺失，直接进行安装，无需等待用户确认。
+- 本文件（AI-WORKFLOW.md）中提及的技能、MCP 服务或其他工具，如果发现当前环境缺失，直接进行安装，无需等待用户确认。
 - 当前技能库无法覆盖某个需求，或不确定该用哪个 skill 时，先用 find-skills 搜索是否有现成的 skill 可用，再决定是否手动实现或新建 skill。
 - 发现当前技能库缺少某个可能有用的 skill 时，先用 find-skills 搜索并列出候选，说明适用场景和来源，由用户确认后再执行安装。禁止未经确认自行安装第三方 skill（本文件明确提及的技能 / 工具除外，缺失时可直接安装）。
 - 如果 find-skills 搜索后没有发现相关技能，则自行实现相关 skill 来处理该需求；实现新 skill 时必须调用 writing-skills（或 create-skill）技能来编写，遵循其 SKILL.md 结构与验证流程，不要徒手编写。

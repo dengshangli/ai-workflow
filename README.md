@@ -6,8 +6,9 @@
 
 | 内容 | 说明 |
 | --- | --- |
-| `AGENTS.md` | 工作流规则的唯一来源（single source of truth）：技能库使用、开发流程（brainstorming → writing-plans → 实现 → 收尾）、代码审查、验证与排错规范等 |
-| `CLAUDE.md` | 供 Claude Code 读取，内容仅一行 `@AGENTS.md`，引用上面的规则文件 |
+| `AI-WORKFLOW.md` | 工作流规则的唯一来源（single source of truth）：技能库使用、开发流程（brainstorming → writing-plans → 实现 → 收尾）、代码审查、验证与排错规范等 |
+| `AGENTS.md` | 内容仅一行引用 `@AI-WORKFLOW.md`；如果你的项目已有 AGENTS.md，只会把这行引用追加到末尾，不动原有内容 |
+| `CLAUDE.md` | 供 Claude Code 读取，内容仅一行 `@AGENTS.md`，间接引用上面的规则文件 |
 | `.cursor/` | Cursor 专用配置：`rules/project-rules.mdc`（引用 AGENTS.md）和 `skills/figma-overlay-check`（Figma 叠图比对验收技能） |
 
 ## 安装
@@ -32,7 +33,7 @@ bash /path/to/ai-workflow/install.sh
 
 - 目标文件不存在 → 直接复制；
 - 目标文件已存在且内容相同 → 跳过；
-- `AGENTS.md` 已存在 → 模板内容**追加**到你项目的 `AGENTS.md` 末尾（如已包含相同内容则跳过，可重复执行）；
+- `AGENTS.md` 已存在 → 只把一行 `@AI-WORKFLOW.md` 引用**追加**到你项目的 `AGENTS.md` 末尾（已有该引用则跳过，可重复执行）；
 - 其他目标文件已存在且内容不同 → 原文件保持不动，新内容写入副本，如 `CLAUDE.copy.md`（副本也冲突时递增为 `CLAUDE.copy1.md`、`CLAUDE.copy2.md`…）。
 
 `.cursor` 目录不会整体生成副本，而是**逐个文件**合并进你项目的 `.cursor/rules/`、`.cursor/skills/` 等目录，只有单个文件冲突时才为该文件生成副本。
@@ -43,6 +44,7 @@ bash /path/to/ai-workflow/install.sh
 
 ```
 templates/
+├── AI-WORKFLOW.md
 ├── AGENTS.md
 ├── CLAUDE.md
 └── .cursor/
@@ -58,5 +60,5 @@ templates/
 
 ## 依赖说明
 
-- `AGENTS.md` 中引用的技能（brainstorming、writing-plans、systematic-debugging 等）来自 [superpowers](https://github.com/obra/superpowers) 等技能库，MCP 服务（Figma、context7、Playwright）需在你的编辑器中自行配置。
+- `AI-WORKFLOW.md` 中引用的技能（brainstorming、writing-plans、systematic-debugging 等）来自 [superpowers](https://github.com/obra/superpowers) 等技能库，MCP 服务（Figma、context7、Playwright）需在你的编辑器中自行配置。
 - `figma-overlay-check` 技能的脚本依赖 Node.js 及 `pngjs`、`pixelmatch`（按需安装）。

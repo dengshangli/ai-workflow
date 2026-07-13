@@ -4,8 +4,9 @@
 #   curl -fsSL https://raw.githubusercontent.com/dengshangli/ai-workflow/main/install.sh | bash
 #
 # 行为说明：
-# - AGENTS.md / CLAUDE.md 复制到项目根目录
-# - 项目已有 AGENTS.md 时，把模板内容追加到项目的 AGENTS.md 末尾（已包含则跳过）
+# - 规则正文放在 AI-WORKFLOW.md，复制到项目根目录
+# - AGENTS.md / CLAUDE.md 只是对 AI-WORKFLOW.md 的引用；项目已有 AGENTS.md 时，
+#   仅把一行引用追加到末尾（已包含则跳过），不动原有内容
 # - .cursor/ 下的文件逐个合并进项目的 .cursor/rules、.cursor/skills 等目录
 # - 其他目标文件已存在且内容不同时，不覆盖，写入 xxx.copy.ext 副本
 # - 目标文件已存在且内容相同时，跳过
@@ -77,7 +78,7 @@ install_file() {
   echo "  冲突→副本   $target  (原文件 $base 未改动)"
 }
 
-# AGENTS.md 专用：目标已存在时追加模板内容；已包含相同内容则跳过，保证可重复执行
+# AGENTS.md 专用：目标已存在时仅追加对 AI-WORKFLOW.md 的引用；已包含则跳过，保证可重复执行
 append_file() {
   local src="$1" dst="$2"
   if [ ! -e "$dst" ]; then
@@ -85,13 +86,13 @@ append_file() {
     echo "  新增        $dst"
     return
   fi
-  if [[ "$(cat "$dst")" == *"$(cat "$src")"* ]]; then
-    echo "  跳过(已包含) $dst"
+  if grep -qF '@AI-WORKFLOW.md' "$dst"; then
+    echo "  跳过(已引用) $dst"
     return
   fi
   printf '\n' >> "$dst"
   cat "$src" >> "$dst"
-  echo "  追加        $dst"
+  echo "  追加引用    $dst"
 }
 
 echo "安装 AI 工作流文件到：$DEST"
