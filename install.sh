@@ -7,9 +7,7 @@
 # - 规则正文放在 AI-WORKFLOW.md，复制到项目根目录
 # - AGENTS.md / CLAUDE.md 只是对 AI-WORKFLOW.md 的引用；项目已有 AGENTS.md 时，
 #   仅把一行引用追加到末尾（已包含则跳过），不动原有内容
-# - .cursor/ 下的文件逐个合并进项目的 .cursor/rules、.cursor/skills 等目录
-# - 其他目标文件已存在且内容不同时，不覆盖，写入 xxx.copy.ext 副本
-# - 目标文件已存在且内容相同时，跳过
+# - 除 AGENTS.md 外的其他文件：项目没有则直接生成，已存在则直接覆盖
 
 set -euo pipefail
 
@@ -37,23 +35,10 @@ if [ ! -d "$TEMPLATES" ]; then
   exit 1
 fi
 
-# 生成不冲突的副本文件名：AGENTS.md -> AGENTS.copy.md -> AGENTS.copy1.md ...
-copy_name() {
-  local dir="$1" base="$2" n="$3" suffix
-  [ "$n" -eq 0 ] && suffix="copy" || suffix="copy$n"
-  if [[ "$base" == *.* ]]; then
-    echo "$dir/${base%.*}.$suffix.${base##*.}"
-  else
-    echo "$dir/$base.$suffix"
-  fi
-}
-
+# 除 AGENTS.md 外的文件：不存在则新增，存在则直接覆盖
 install_file() {
   local src="$1" dst="$2"
-  local dir base target n
-  dir="$(dirname "$dst")"
-  base="$(basename "$dst")"
-  mkdir -p "$dir"
+  mkdir -p "$(dirname "$dst")"
 
   if [ ! -e "$dst" ]; then
     cp "$src" "$dst"
@@ -64,18 +49,8 @@ install_file() {
     echo "  跳过(相同)  $dst"
     return
   fi
-  n=0
-  target="$(copy_name "$dir" "$base" "$n")"
-  while [ -e "$target" ]; do
-    if cmp -s "$src" "$target"; then
-      echo "  跳过(副本已存在) $target"
-      return
-    fi
-    n=$((n + 1))
-    target="$(copy_name "$dir" "$base" "$n")"
-  done
-  cp "$src" "$target"
-  echo "  冲突→副本   $target  (原文件 $base 未改动)"
+  cp "$src" "$dst"
+  echo "  覆盖        $dst"
 }
 
 # AGENTS.md 专用：目标已存在时仅追加对 AI-WORKFLOW.md 的引用；已包含则跳过，保证可重复执行
@@ -105,7 +80,7 @@ while IFS= read -r src; do
   else
     install_file "$src" "$DEST/$rel"
   fi
-done < <(find "$TEMPLATES" -type f | sort)
+done < <(find "$TEMPLATES" -type f ! -name '.DS_Store' | sort)
 
 echo
-echo "完成。如生成了 *.copy.* 副本，请手动对比合并后删除副本。"
+echo "完成。"
