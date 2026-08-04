@@ -34,6 +34,10 @@
 
 ## UI / 样式还原
 - 涉及 UI / 样式还原任务时，必须先调用 Figma MCP 获取设计结构，再动手写样式代码，禁止凭截图或想象还原。
+- 从 Figma 下载图片资源时，除 SVG 外默认使用 2 倍图（2x）导出；SVG 使用矢量原文件，不强制导出倍率。
+- 所有图片资源在提交或使用前都必须经过 `@funboxteam/optimizt` 压缩，包括 SVG。
+- 使用 SVG 时始终通过 `@svgr/webpack` 将其转换为 React 组件后直接引入使用，禁止通过 `<img>` / `next/image` 引用 SVG 文件；若项目未安装 `@svgr/webpack`，自动安装并完成 turbopack / Next.js 配置后再使用。
+- 只要任务中调用过 Figma MCP 获取设计结构（即触发了本节规则、以 Figma 设计稿为基准实现或调整样式的任务），完成后必须调用 figma-overlay-check 技能做叠图比对验证还原度，达标（mismatch < 2% 且无成片差异色块）才算完成；纯逻辑改动或无设计稿参照的样式微调不强制。
 
 ## 框架 / 库 API 用法
 - 涉及框架 / 库 API 用法时，必须先用 context7 查询当前版本的官方文档，确认 API 签名和推荐用法后再编码，避免使用过时或臆造的 API。
@@ -46,7 +50,6 @@
 
 ## 写完代码后的验证
 - 写完代码后必须用 Playwright 跑一次验证，确认功能实际可用，而不是只看代码正确。
-- 只要任务中调用过 Figma MCP 获取设计结构（即触发了上文「UI / 样式还原」规则、以 Figma 设计稿为基准实现或调整样式的任务），完成后必须调用 figma-overlay-check 技能做叠图比对验证还原度，达标（mismatch < 2% 且无成片差异色块）才算完成；纯逻辑改动或无设计稿参照的样式微调不强制。
 
 ## 报错 / 崩溃 / 异常行为排查
 涉及报错、崩溃、异常行为的排查任务时，必须先触发 systematic-debugging 技能，按以下顺序执行：
@@ -64,4 +67,3 @@
 - 组件开发必须遵循 vercel-labs/agent-skills 的规范，包括组件组合（composition）模式和官方推荐写法。
 - 优先使用组件组合而非 props 透传或过度抽象。
 - Server Component / Client Component 的划分遵循 Next.js 官方推荐：默认 Server Component，仅在需要交互 / 状态 / 浏览器 API 时使用 `"use client"`。
-- 使用 SVG 时始终通过 `@svgr/webpack` 将其转换为 React 组件后直接引入使用，禁止通过 `<img>` / `next/image` 引用 SVG 文件；若项目未安装 `@svgr/webpack`，自动安装并完成 turbopack / Next.js 配置后再使用。
